@@ -7,7 +7,7 @@ import DepositForm from './components/DepositForm'
 
 // Define the base API URL for your goals resource
 // CORRECTED: Use a relative path as both front-end and backend are on the same origin
-const API_BASE_URL = '/goals'; // <--- CHANGE THIS LINE!
+const API_BASE_URL = 'https://smart-goal-project.onrender.com/goals'; // <--- CHANGE THIS LINE!
 
 function App() {
   // ... rest of your App.jsx code ...
