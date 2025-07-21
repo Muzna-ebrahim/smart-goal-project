@@ -60,3 +60,9 @@ A financial goal tracking application built with React and Vite that helps users
 - `src/components/` - React components
 - `db.json` - Mock database for goals
 
+## CONTRIBUTIONS
+If you want to add any contributions , they are allowed.
+
+## AUTHOR
+This project was done by Muzna Ebrahim Mohamed.
+Email ebrahimmuznah98@gmail.com
