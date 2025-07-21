@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import GoalItem from './GoalItem';
+import { API_URL } from '../config';
 
 function GoalList({ onEditGoal, onDeleteGoal }) {
   const [goals, setGoals] = useState([]);
@@ -9,7 +10,7 @@ function GoalList({ onEditGoal, onDeleteGoal }) {
   useEffect(() => {
     const fetchGoals = async () => {
       try {
-        const response = await fetch('http://localhost:3000/goals');
+        const response = await fetch(`${API_URL}/goals`);
         if (!response.ok) {
           throw new Error('Failed to fetch goals');
         }

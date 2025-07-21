@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { API_URL } from '../config';
 
 function DepositForm({ onDeposit, onCancel }) {
   const [goals, setGoals] = useState([]);
@@ -11,7 +12,7 @@ function DepositForm({ onDeposit, onCancel }) {
   useEffect(() => {
     const fetchGoals = async () => {
       try {
-        const response = await fetch('http://localhost:3000/goals');
+        const response = await fetch({API_URL});
         if (!response.ok) {
           throw new Error('Failed to fetch goals');
         }
