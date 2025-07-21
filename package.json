@@ -10,11 +10,13 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "start-api": "json-server --watch db.json --port 3000",
-    "start": "node server.js" 
+    // CRUCIAL CHANGE HERE: Use a shell command to ensure correct path
+    "start": "node $(pwd)/server.js"
   },
   "dependencies": {
-    "cors": "^2.8.5",         
-    "express": "^4.19.2",     
+    "cors": "^2.8.5",
+    "json-server": "^0.17.4",
+    "express": "^4.19.2",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },
