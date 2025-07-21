@@ -10,7 +10,7 @@ function GoalList({ onEditGoal, onDeleteGoal }) {
   useEffect(() => {
     const fetchGoals = async () => {
       try {
-        const response = await fetch('http://localhost:3000/goals');
+        const response = await fetch('https://smart-goal-project.onrender.com');
         if (!response.ok) {
           throw new Error('Failed to fetch goals');
         }

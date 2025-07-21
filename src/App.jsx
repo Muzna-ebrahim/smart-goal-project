@@ -12,7 +12,7 @@ function App() {
   // Handle adding a new goal
   const handleAddGoal = async (goalData) => {
     try {
-      const response = await fetch('http://localhost:3000/goals', {
+      const response = await fetch('https://smart-goal-project.onrender.com', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -35,7 +35,7 @@ function App() {
   // Handle updating an existing goal
   const handleUpdateGoal = async (goalData) => {
     try {
-      const response = await fetch(`http://localhost:3000/goals/${currentGoal.id}`, {
+      const response = await fetch(`https://smart-goal-project.onrender.com${currentGoal.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -66,7 +66,7 @@ function App() {
     }
 
     try {
-      const response = await fetch(`http://localhost:3000/goals/${goalId}`, {
+      const response = await fetch(`https://smart-goal-project.onrender.com${goalId}`, {
         method: 'DELETE',
       })
 
@@ -85,7 +85,7 @@ function App() {
   const handleDeposit = async ({ goalId, amount }) => {
     try {
       // First, get the current goal data
-      const goalResponse = await fetch(`http://localhost:3000/goals/${goalId}`)
+      const goalResponse = await fetch(`https://smart-goal-project.onrender.com${goalId}`)
       if (!goalResponse.ok) {
         throw new Error('Failed to fetch goal')
       }
@@ -93,7 +93,7 @@ function App() {
 
       // Update the saved amount
       const updatedAmount = goal.savedAmount + amount
-      const response = await fetch(`http://localhost:3000/goals/${goalId}`, {
+      const response = await fetch(`https://smart-goal-project.onrender.com${goalId}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
