@@ -1,31 +1,28 @@
+// DepositForm.jsx
 import { useState, useEffect } from 'react';
 
-// Receive apiBaseUrl as a prop
-function DepositForm({ onDeposit, onCancel, apiBaseUrl }) {
+// IMPORTANT: Add apiBaseUrl as a prop
+function DepositForm({ onDeposit, onCancel, apiBaseUrl }) { // <--- ADD apiBaseUrl here
   const [goals, setGoals] = useState([]);
   const [formData, setFormData] = useState({
     goalId: '',
     amount: ''
   });
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null); // Add error state
 
   useEffect(() => {
     const fetchGoals = async () => {
       try {
-        setIsLoading(true);
-        setError(null); // Reset error
-        // CORRECTED FETCH URL: Use apiBaseUrl
-        const response = await fetch(apiBaseUrl);
+        // CORRECTED FETCH URL: Use the passed apiBaseUrl prop
+        const response = await fetch(apiBaseUrl); // <--- CHANGE THIS LINE!
         if (!response.ok) {
-          throw new Error(`Failed to fetch goals: ${response.statusText}`);
+          throw new Error('Failed to fetch goals');
         }
         const data = await response.json();
         setGoals(data);
         setIsLoading(false);
       } catch (error) {
-        console.error('Error fetching goals in DepositForm:', error);
-        setError(error.message); // Set error message
+        console.error('Error fetching goals:', error);
         setIsLoading(false);
       }
     };
@@ -33,10 +30,31 @@ function DepositForm({ onDeposit, onCancel, apiBaseUrl }) {
     if (apiBaseUrl) { // Only fetch if apiBaseUrl is provided
       fetchGoals();
     }
-  }, [apiBaseUrl]); // Rerun effect if apiBaseUrl changes
+  }, [apiBaseUrl]); // <--- ADD apiBaseUrl to the dependency array
 
-  if (isLoading) return <div>Loading goals for deposit...</div>;
-  if (error) return <div>Error loading goals: {error}</div>; // Display error
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: name === 'amount' ? value : value
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (!formData.goalId || !formData.amount || parseFloat(formData.amount) <= 0) {
+      alert('Please select a goal and enter a valid amount');
+      return;
+    }
+
+    onDeposit({
+      goalId: parseInt(formData.goalId),
+      amount: parseFloat(formData.amount)
+    });
+  };
+
+  if (isLoading) return <div>Loading goals...</div>;
 
   return (
     <form className="deposit-form" onSubmit={handleSubmit}>
@@ -52,15 +70,11 @@ function DepositForm({ onDeposit, onCancel, apiBaseUrl }) {
           required
         >
           <option value="">Select a goal</option>
-          {goals.length === 0 ? (
-            <option disabled>No goals available. Add one first.</option>
-          ) : (
-            goals.map(goal => (
-              <option key={goal.id} value={goal.id}>
-                {goal.name} (${goal.savedAmount.toFixed(2)} / ${goal.targetAmount.toFixed(2)})
-              </option>
-            ))
-          )}
+          {goals.map(goal => (
+            <option key={goal.id} value={goal.id}>
+              {goal.name} (${goal.savedAmount.toFixed(2)} / ${goal.targetAmount.toFixed(2)})
+            </option>
+          ))}
         </select>
       </div>
 

@@ -1,8 +1,10 @@
+// GoalList.jsx
 import { useState, useEffect } from 'react';
 import GoalItem from './GoalItem';
 
-// Receive apiBaseUrl as a prop
-function GoalList({ onEditGoal, onDeleteGoal, apiBaseUrl }) {
+
+// IMPORTANT: Add apiBaseUrl as a prop
+function GoalList({ onEditGoal, onDeleteGoal, apiBaseUrl }) { // <--- ADD apiBaseUrl here
   const [goals, setGoals] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -10,19 +12,16 @@ function GoalList({ onEditGoal, onDeleteGoal, apiBaseUrl }) {
   useEffect(() => {
     const fetchGoals = async () => {
       try {
-        setIsLoading(true);
-        setError(null); // Reset error
-        // CORRECTED FETCH URL: Use apiBaseUrl
-        const response = await fetch(apiBaseUrl);
+        // CORRECTED FETCH URL: Use the passed apiBaseUrl prop
+        const response = await fetch(apiBaseUrl); // <--- CHANGE THIS LINE!
         if (!response.ok) {
-          throw new Error(`Failed to fetch goals: ${response.statusText}`);
+          throw new Error('Failed to fetch goals');
         }
         const data = await response.json();
         setGoals(data);
         setIsLoading(false);
       } catch (error) {
-        console.error('Error fetching goals in GoalList:', error);
-        setError(error.message); // Set error message
+        setError(error.message);
         setIsLoading(false);
       }
     };
@@ -30,7 +29,7 @@ function GoalList({ onEditGoal, onDeleteGoal, apiBaseUrl }) {
     if (apiBaseUrl) { // Only fetch if apiBaseUrl is provided
       fetchGoals();
     }
-  }, [apiBaseUrl]); // Rerun effect if apiBaseUrl changes
+  }, [apiBaseUrl]); // <--- ADD apiBaseUrl to the dependency array
 
   if (isLoading) return <div>Loading goals...</div>;
   if (error) return <div>Error: {error}</div>;
