@@ -3,7 +3,6 @@ import './App.css'
 import GoalList from './components/GoalList'
 import GoalForm from './components/GoalForm'
 import DepositForm from './components/DepositForm'
-import { API_URL } from './config'
 
 function App() {
   const [view, setView] = useState('list') // 'list', 'add', 'edit', 'deposit'
@@ -13,7 +12,7 @@ function App() {
   // Handle adding a new goal
   const handleAddGoal = async (goalData) => {
     try {
-      const response = await fetch(`${API_URL}/goals`, {
+      const response = await fetch('http://localhost:3000/goals', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -36,7 +35,7 @@ function App() {
   // Handle updating an existing goal
   const handleUpdateGoal = async (goalData) => {
     try {
-      const response = await fetch(`${API_URL}/goals/${currentGoal.id}`, {
+      const response = await fetch(`http://localhost:3000/goals/${currentGoal.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -67,7 +66,7 @@ function App() {
     }
 
     try {
-      const response = await fetch(`${API_URL}/goals/${goalId}`, {
+      const response = await fetch(`http://localhost:3000/goals/${goalId}`, {
         method: 'DELETE',
       })
 
@@ -86,7 +85,7 @@ function App() {
   const handleDeposit = async ({ goalId, amount }) => {
     try {
       // First, get the current goal data
-      const goalResponse = await fetch(`${API_URL}/goals/${goalId}`)
+      const goalResponse = await fetch(`http://localhost:3000/goals/${goalId}`)
       if (!goalResponse.ok) {
         throw new Error('Failed to fetch goal')
       }
@@ -94,7 +93,7 @@ function App() {
 
       // Update the saved amount
       const updatedAmount = goal.savedAmount + amount
-      const response = await fetch(`${API_URL}/goals/${goalId}`, {
+      const response = await fetch(`http://localhost:3000/goals/${goalId}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
