@@ -10,7 +10,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "start-api": "json-server --watch db.json --port 3000",
-    // CRUCIAL CHANGE HERE: Use a shell command to ensure correct path
+   
     "start": "node $(pwd)/server.js"
   },
   "dependencies": {

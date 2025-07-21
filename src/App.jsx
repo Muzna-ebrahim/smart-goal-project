@@ -6,7 +6,7 @@ import DepositForm from './components/DepositForm'
 
 // Define the base API URL for your goals resource
 // Use a relative path because both front-end and backend are served from the same origin on Render
-const API_BASE_URL = '/goals';
+const API_BASE_URL = 'https://smart-goal-project.onrender.com/goals';
 
 function App() {
   const [view, setView] = useState('list') // 'list', 'add', 'edit', 'deposit'
