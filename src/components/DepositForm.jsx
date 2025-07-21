@@ -1,61 +1,47 @@
 import { useState, useEffect } from 'react';
 
-
-function DepositForm({ onDeposit, onCancel }) {
+// Receive apiBaseUrl as a prop
+function DepositForm({ onDeposit, onCancel, apiBaseUrl }) {
   const [goals, setGoals] = useState([]);
   const [formData, setFormData] = useState({
     goalId: '',
     amount: ''
   });
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null); // Add error state
 
   useEffect(() => {
     const fetchGoals = async () => {
       try {
-        const response = await fetch('https://smart-goal-project.onrender.com');
+        setIsLoading(true);
+        setError(null); // Reset error
+        // CORRECTED FETCH URL: Use apiBaseUrl
+        const response = await fetch(apiBaseUrl);
         if (!response.ok) {
-          throw new Error('Failed to fetch goals');
+          throw new Error(`Failed to fetch goals: ${response.statusText}`);
         }
         const data = await response.json();
         setGoals(data);
         setIsLoading(false);
       } catch (error) {
-        console.error('Error fetching goals:', error);
+        console.error('Error fetching goals in DepositForm:', error);
+        setError(error.message); // Set error message
         setIsLoading(false);
       }
     };
 
-    fetchGoals();
-  }, []);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: name === 'amount' ? value : value
-    }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    
-    if (!formData.goalId || !formData.amount || parseFloat(formData.amount) <= 0) {
-      alert('Please select a goal and enter a valid amount');
-      return;
+    if (apiBaseUrl) { // Only fetch if apiBaseUrl is provided
+      fetchGoals();
     }
+  }, [apiBaseUrl]); // Rerun effect if apiBaseUrl changes
 
-    onDeposit({
-      goalId: parseInt(formData.goalId),
-      amount: parseFloat(formData.amount)
-    });
-  };
-
-  if (isLoading) return <div>Loading goals...</div>;
+  if (isLoading) return <div>Loading goals for deposit...</div>;
+  if (error) return <div>Error loading goals: {error}</div>; // Display error
 
   return (
     <form className="deposit-form" onSubmit={handleSubmit}>
       <h2>Make a Deposit</h2>
-      
+
       <div className="form-group">
         <label htmlFor="goalId">Select Goal:</label>
         <select
@@ -66,14 +52,18 @@ function DepositForm({ onDeposit, onCancel }) {
           required
         >
           <option value="">Select a goal</option>
-          {goals.map(goal => (
-            <option key={goal.id} value={goal.id}>
-              {goal.name} (${goal.savedAmount.toFixed(2)} / ${goal.targetAmount.toFixed(2)})
-            </option>
-          ))}
+          {goals.length === 0 ? (
+            <option disabled>No goals available. Add one first.</option>
+          ) : (
+            goals.map(goal => (
+              <option key={goal.id} value={goal.id}>
+                {goal.name} (${goal.savedAmount.toFixed(2)} / ${goal.targetAmount.toFixed(2)})
+              </option>
+            ))
+          )}
         </select>
       </div>
-      
+
       <div className="form-group">
         <label htmlFor="amount">Amount ($):</label>
         <input
@@ -87,7 +77,7 @@ function DepositForm({ onDeposit, onCancel }) {
           required
         />
       </div>
-      
+
       <div className="form-actions">
         <button type="submit">Make Deposit</button>
         <button type="button" onClick={onCancel}>Cancel</button>

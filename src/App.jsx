@@ -4,6 +4,10 @@ import GoalList from './components/GoalList'
 import GoalForm from './components/GoalForm'
 import DepositForm from './components/DepositForm'
 
+// Define the base API URL for your goals resource
+// Use a relative path because both front-end and backend are served from the same origin on Render
+const API_BASE_URL = '/goals';
+
 function App() {
   const [view, setView] = useState('list') // 'list', 'add', 'edit', 'deposit'
   const [currentGoal, setCurrentGoal] = useState(null)
@@ -12,7 +16,8 @@ function App() {
   // Handle adding a new goal
   const handleAddGoal = async (goalData) => {
     try {
-      const response = await fetch('https://smart-goal-project.onrender.com', {
+      // CORRECTED FETCH URL: Append API_BASE_URL
+      const response = await fetch(API_BASE_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -35,7 +40,8 @@ function App() {
   // Handle updating an existing goal
   const handleUpdateGoal = async (goalData) => {
     try {
-      const response = await fetch(`https://smart-goal-project.onrender.com${currentGoal.id}`, {
+      // CORRECTED FETCH URL: Append API_BASE_URL and goal ID
+      const response = await fetch(`${API_BASE_URL}/${currentGoal.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -66,7 +72,8 @@ function App() {
     }
 
     try {
-      const response = await fetch(`https://smart-goal-project.onrender.com${goalId}`, {
+      // CORRECTED FETCH URL: Append API_BASE_URL and goal ID
+      const response = await fetch(`${API_BASE_URL}/${goalId}`, {
         method: 'DELETE',
       })
 
@@ -85,7 +92,8 @@ function App() {
   const handleDeposit = async ({ goalId, amount }) => {
     try {
       // First, get the current goal data
-      const goalResponse = await fetch(`https://smart-goal-project.onrender.com${goalId}`)
+      // CORRECTED FETCH URL: Append API_BASE_URL and goal ID
+      const goalResponse = await fetch(`${API_BASE_URL}/${goalId}`)
       if (!goalResponse.ok) {
         throw new Error('Failed to fetch goal')
       }
@@ -93,7 +101,8 @@ function App() {
 
       // Update the saved amount
       const updatedAmount = goal.savedAmount + amount
-      const response = await fetch(`https://smart-goal-project.onrender.com${goalId}`, {
+      // CORRECTED FETCH URL: Append API_BASE_URL and goal ID
+      const response = await fetch(`${API_BASE_URL}/${goalId}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -135,34 +144,38 @@ function App() {
 
       <main className="app-content">
         {view === 'list' && (
-          <GoalList 
+          <GoalList
             key={refreshTrigger}
-            onEditGoal={handleEditGoal} 
-            onDeleteGoal={handleDeleteGoal} 
+            onEditGoal={handleEditGoal}
+            onDeleteGoal={handleDeleteGoal}
+            // Pass API_BASE_URL to GoalList
+            apiBaseUrl={API_BASE_URL}
           />
-        
+
         )}
 
         {view === 'add' && (
-          <GoalForm 
-            onSave={handleAddGoal} 
-            onCancel={() => setView('list')} 
+          <GoalForm
+            onSave={handleAddGoal}
+            onCancel={() => setView('list')}
           />
         )}
 
         {view === 'edit' && currentGoal && (
-          <GoalForm 
-            goal={currentGoal} 
-            onSave={handleUpdateGoal} 
-            onCancel={() => { setCurrentGoal(null); setView('list'); }} 
+          <GoalForm
+            goal={currentGoal}
+            onSave={handleUpdateGoal}
+            onCancel={() => { setCurrentGoal(null); setView('list'); }}
           />
         )}
 
         {view === 'deposit' && (
-          <DepositForm 
+          <DepositForm
             key={refreshTrigger}
-            onDeposit={handleDeposit} 
-            onCancel={() => setView('list')} 
+            onDeposit={handleDeposit}
+            onCancel={() => setView('list')}
+            // Pass API_BASE_URL to DepositForm
+            apiBaseUrl={API_BASE_URL}
           />
         )}
       </main>
