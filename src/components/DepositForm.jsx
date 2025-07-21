@@ -1,102 +1,69 @@
-// DepositForm.jsx
 import { useState, useEffect } from 'react';
 
-// IMPORTANT: Add apiBaseUrl as a prop
-function DepositForm({ onDeposit, onCancel, apiBaseUrl }) { // <--- ADD apiBaseUrl here
+function DepositForm({ onDeposit, onCancel, apiBaseUrl }) {
   const [goals, setGoals] = useState([]);
-  const [formData, setFormData] = useState({
-    goalId: '',
-    amount: ''
-  });
-  const [isLoading, setIsLoading] = useState(true);
+  const [selectedGoalId, setSelectedGoalId] = useState('');
+  const [amount, setAmount] = useState('');
 
   useEffect(() => {
     const fetchGoals = async () => {
       try {
-        // CORRECTED FETCH URL: Use the passed apiBaseUrl prop
-        const response = await fetch(apiBaseUrl); // <--- CHANGE THIS LINE!
-        if (!response.ok) {
-          throw new Error('Failed to fetch goals');
-        }
-        const data = await response.json();
+        const res = await fetch(apiBaseUrl);
+        const data = await res.json();
         setGoals(data);
-        setIsLoading(false);
-      } catch (error) {
-        console.error('Error fetching goals:', error);
-        setIsLoading(false);
+      } catch (err) {
+        console.error('Failed to fetch goals:', err);
       }
     };
 
-    if (apiBaseUrl) { // Only fetch if apiBaseUrl is provided
-      fetchGoals();
-    }
-  }, [apiBaseUrl]); // <--- ADD apiBaseUrl to the dependency array
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: name === 'amount' ? value : value
-    }));
-  };
+    fetchGoals();
+  }, [apiBaseUrl]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    if (!formData.goalId || !formData.amount || parseFloat(formData.amount) <= 0) {
-      alert('Please select a goal and enter a valid amount');
-      return;
-    }
-
-    onDeposit({
-      goalId: parseInt(formData.goalId),
-      amount: parseFloat(formData.amount)
-    });
+    if (!selectedGoalId || !amount) return;
+    onDeposit(Number(selectedGoalId), parseFloat(amount));
+    setAmount('');
   };
 
-  if (isLoading) return <div>Loading goals...</div>;
-
   return (
-    <form className="deposit-form" onSubmit={handleSubmit}>
+    <div className="deposit-form">
       <h2>Make a Deposit</h2>
+      <form onSubmit={handleSubmit}>
+        <label>
+          Select Goal:
+          <select
+            value={selectedGoalId}
+            onChange={(e) => setSelectedGoalId(e.target.value)}
+            required
+          >
+            <option value="">-- Choose a goal --</option>
+            {goals.map((goal) => (
+              <option key={goal.id} value={goal.id}>
+                {goal.name}
+              </option>
+            ))}
+          </select>
+        </label>
 
-      <div className="form-group">
-        <label htmlFor="goalId">Select Goal:</label>
-        <select
-          id="goalId"
-          name="goalId"
-          value={formData.goalId}
-          onChange={handleChange}
-          required
-        >
-          <option value="">Select a goal</option>
-          {goals.map(goal => (
-            <option key={goal.id} value={goal.id}>
-              {goal.name} (${goal.savedAmount.toFixed(2)} / ${goal.targetAmount.toFixed(2)})
-            </option>
-          ))}
-        </select>
-      </div>
+        <label>
+          Amount:
+          <input
+            type="number"
+            step="0.01"
+            min="0"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            required
+          />
+        </label>
 
-      <div className="form-group">
-        <label htmlFor="amount">Amount ($):</label>
-        <input
-          type="number"
-          id="amount"
-          name="amount"
-          min="0.01"
-          step="0.01"
-          value={formData.amount}
-          onChange={handleChange}
-          required
-        />
-      </div>
-
-      <div className="form-actions">
-        <button type="submit">Make Deposit</button>
-        <button type="button" onClick={onCancel}>Cancel</button>
-      </div>
-    </form>
+        <div className="form-actions">
+          <button type="submit">Deposit</button>
+          <button type="button" onClick={onCancel}>Cancel</button>
+        </div>
+      </form>
+    </div>
   );
 }
 
